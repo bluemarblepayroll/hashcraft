@@ -7,6 +7,9 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-# TBD
-module Hashcraft
-end
+require 'forwardable'
+require 'singleton'
+
+require_relative 'hashcraft/base'
+require_relative 'hashcraft/mutator_registry'
+require_relative 'hashcraft/transformer_registry'

@@ -8,5 +8,14 @@
 #
 
 module Hashcraft
-  VERSION = '1.0.0-alpha'
+  module Transformers
+    # Default transformer, simply returns the value passed in.
+    class PassThru
+      include Singleton
+
+      def transform(value, _option)
+        value
+      end
+    end
+  end
 end
