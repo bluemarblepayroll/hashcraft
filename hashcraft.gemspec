@@ -5,10 +5,10 @@ require './lib/hashcraft/version'
 Gem::Specification.new do |s|
   s.name        = 'hashcraft'
   s.version     = Hashcraft::VERSION
-  s.summary     = 'TBD'
+  s.summary     = 'Hash-based Data Contracting Domain Specific Language'
 
   s.description = <<-DESCRIPTION
-    TBD
+    Provides a DSL for implementing classes which can then be consumed to create pre-defined hashes.
   DESCRIPTION
 
   s.authors     = ['Matthew Ruggio']
