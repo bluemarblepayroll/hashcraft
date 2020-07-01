@@ -16,13 +16,15 @@ module Hashcraft
     extend Dsl
     extend Forwardable
 
-    def_delegators :'self.class', :option?, :option_set, :find_option
+    def_delegators :'self.class',
+                   :option?,
+                   :option_set,
+                   :find_option
 
     def initialize(opts = {}, &block)
-      @data = {}
+      @data = make_default_data
 
-      load_defaults
-      load_options(opts)
+      load_opts(opts)
 
       return unless block_given?
 
@@ -45,18 +47,12 @@ module Hashcraft
 
     attr_reader :data
 
-    def load_defaults
-      option_set.values.each { |o| o.default!(data) }
+    def make_default_data
+      option_set.values.each_with_object({}) { |o, memo| o.default!(memo) }
     end
 
-    def load_options(opts = {}, &block)
-      (opts || {}).each do |key, value|
-        option = find_option(key)
-
-        raise NoMethodError, "#{key} is not an option and is therefore not a method" unless option
-
-        option.value!(data, value, &block)
-      end
+    def load_opts(opts)
+      (opts || {}).each { |k, v| send(k, v) }
     end
 
     def respond_to_missing?(method_name, include_private = false)
@@ -65,7 +61,7 @@ module Hashcraft
 
     def method_missing(method_name, *arguments, &block)
       if option?(method_name)
-        load_options({ method_name => arguments[0] }, &block)
+        find_option(method_name).value!(data, arguments.first, &block)
       else
         super
       end
