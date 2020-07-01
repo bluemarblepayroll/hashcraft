@@ -16,7 +16,7 @@ module Hashcraft
     extend Dsl
     extend Forwardable
 
-    def_delegators :'self.class', :option?, :all_options, :find_option
+    def_delegators :'self.class', :option?, :option_set, :find_option
 
     def initialize(opts = {}, &block)
       @data = {}
@@ -34,16 +34,11 @@ module Hashcraft
     end
 
     def to_h(key_transformer: nil, value_transformer: nil)
-      compiler = Compiler.new(
+      Compiler.new(
+        option_set,
         key_transformer: key_transformer,
         value_transformer: value_transformer
-      )
-
-      data.each_with_object({}) do |(key, value), memo|
-        option = find_option(key)
-
-        compiler.evaluate!(memo, option, value)
-      end
+      ).evaluate!(data)
     end
 
     private
@@ -51,7 +46,7 @@ module Hashcraft
     attr_reader :data
 
     def load_defaults
-      all_options.values.each { |o| o.default!(data) }
+      option_set.values.each { |o| o.default!(data) }
     end
 
     def load_options(opts = {}, &block)

@@ -8,39 +8,43 @@
 #
 
 require_relative 'option'
+require_relative 'option_set'
 
 module Hashcraft
-  # The under-lining API used to define options for a craftable class.
+  # The class API used to define options for a craftable class.  Each class stores its own
+  # OptionSet instance along with materializing one for its
+  # inheritance chain (child has precedence.)
   module Dsl
     def option?(name)
-      all_options.key?(name.to_s)
+      option_set.exist?(name)
     end
 
     def find_option(name)
-      all_options[name.to_s]
-    end
-
-    def all_options
-      @all_options ||=
-        ancestors
-        .reverse
-        .select { |a| a < Base }
-        .each_with_object({}) { |a, memo| memo.merge!(a.options) }
-    end
-
-    def options
-      @options ||= {}
+      option_set.find(name)
     end
 
     def option(*args)
       opts = args.last.is_a?(Hash) ? args.pop : {}
 
       args.each do |key|
-        name = key.to_s
-        options[name] = Option.new(name, opts)
+        option = Option.new(key, opts)
+
+        local_option_set.add(option)
       end
 
       self
+    end
+
+    def option_set
+      @option_set ||=
+        ancestors
+        .reverse
+        .select { |a| a < Base }
+        .each_with_object(OptionSet.new) { |a, memo| memo.merge!(a.local_option_set) }
+    end
+
+    def local_option_set
+      @local_option_set ||= OptionSet.new
     end
   end
 end

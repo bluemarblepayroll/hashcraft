@@ -9,6 +9,7 @@
 
 require_relative 'registry'
 require_relative 'transformers/camel_case'
+require_relative 'transformers/pascal_case'
 require_relative 'transformers/pass_thru'
 
 module Hashcraft
@@ -20,6 +21,7 @@ module Hashcraft
 
     DEFAULT_MAP = {
       'camel_case' => Transformers::CamelCase.instance,
+      'pascal_case' => Transformers::PascalCase.instance,
       'pass_thru' => Transformers::PassThru.instance,
       '' => Transformers::PassThru.instance
     }.freeze

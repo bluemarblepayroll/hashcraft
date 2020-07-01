@@ -9,18 +9,16 @@
 
 module Hashcraft
   module Transformers
-    # Transform snake-cased to camel-cased string. Example:
-    #   date_of_birth => dateOfBirth
-    #   DATE_OF_BIRTH => dateOfBirth
-    class CamelCase
+    # Transform snake-cased to pascal-cased string. Example:
+    #   date_of_birth => DateOfBirth
+    #   DATE_OF_BIRTH => DateOfBirth
+    class PascalCase
       include Singleton
 
       def transform(value, _option)
         return '' if value.to_s.empty?
 
-        name = value.to_s.split('_').collect(&:capitalize).join
-
-        name[0, 1].downcase + name[1..-1]
+        value.to_s.split('_').collect(&:capitalize).join
       end
     end
   end

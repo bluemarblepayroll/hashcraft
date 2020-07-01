@@ -10,6 +10,10 @@
 require 'forwardable'
 require 'singleton'
 
+# Monkey-patching core libraries
+require_relative 'hashcraft/core_ext/hash'
+Hash.include Hashcraft::CoreExt::Hash
+
 require_relative 'hashcraft/base'
 require_relative 'hashcraft/mutator_registry'
 require_relative 'hashcraft/transformer_registry'

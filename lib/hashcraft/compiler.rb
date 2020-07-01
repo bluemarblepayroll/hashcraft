@@ -12,16 +12,31 @@ require_relative 'dsl'
 module Hashcraft
   # This class understands how to traverse an option chain and output a hash.
   class Compiler
-    attr_reader :key_transformer, :value_transformer
+    attr_reader :key_transformer, :option_set, :value_transformer
 
-    def initialize(key_transformer: nil, value_transformer: nil)
+    def initialize(option_set, key_transformer: nil, value_transformer: nil)
+      raise ArgumentError, 'option_set is required' unless option_set
+
+      @option_set        = option_set
       @key_transformer   = TransformerRegistry.resolve(key_transformer)
       @value_transformer = TransformerRegistry.resolve(value_transformer)
 
       freeze
     end
 
-    def evaluate!(data, option, value)
+    def evaluate!(data)
+      data.each_with_object({}) do |(key, value), memo|
+        option = option_set.find(key)
+
+        evaluate_single!(memo, option, value)
+      end
+    end
+
+    private
+
+    attr_reader :data
+
+    def evaluate_single!(data, option, value)
       key             = option.key.empty? ? option.name : option.key
       transformed_key = key_transformer.transform(key, option)
 
@@ -31,10 +46,6 @@ module Hashcraft
 
       self
     end
-
-    private
-
-    attr_reader :data
 
     def evaluate_values!(option, data, key, values)
       data[key] ||= []

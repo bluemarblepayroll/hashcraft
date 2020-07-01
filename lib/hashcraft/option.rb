@@ -10,25 +10,29 @@
 module Hashcraft
   # Defines a method and corresponding attribute for a craftable class.
   class Option
-    attr_reader :name,
-                :mutator,
-                :eager,
+    attr_reader :craft,
                 :default,
-                :craft,
-                :key
+                :eager,
+                :key,
+                :mutator,
+                :name
 
     def initialize(name, opts = {})
       raise ArgumentError, 'name is required' if name.to_s.empty?
 
-      @name    = name.to_s
-      @mutator = MutatorRegistry.resolve(opts[:mutator])
-      @meta    = opts[:meta] || {}
-      @eager   = opts[:eager] || false
-      @default = opts[:default]
-      @craft   = opts[:craft]
-      @key     = opts[:key].to_s
+      @craft          = opts[:craft]
+      @default        = opts[:default]
+      @eager          = opts[:eager] || false
+      @internal_meta  = (opts[:meta] || {}).symbolize_keys
+      @key            = opts[:key].to_s
+      @mutator        = MutatorRegistry.resolve(opts[:mutator])
+      @name           = name.to_s
 
       freeze
+    end
+
+    def meta(key)
+      internal_meta[key.to_s.to_sym]
     end
 
     def default!(data)
@@ -48,6 +52,8 @@ module Hashcraft
     end
 
     private
+
+    attr_reader :internal_meta
 
     def craft_value(value, &block)
       craft ? craft.new(value, &block) : value

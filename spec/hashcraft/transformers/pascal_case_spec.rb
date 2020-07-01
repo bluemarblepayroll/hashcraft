@@ -9,14 +9,14 @@
 
 require 'spec_helper'
 
-RSpec.describe Hashcraft::Transformers::CamelCase do
+RSpec.describe Hashcraft::Transformers::PascalCase do
   subject { described_class.instance }
 
   {
     '' => '',
-    'frank_rizzo' => 'frankRizzo',
-    'frank rizzo' => 'frank rizzo',
-    'FRANK_RIZZO' => 'frankRizzo'
+    'frank_rizzo' => 'FrankRizzo',
+    'frank rizzo' => 'Frank rizzo',
+    'FRANK_RIZZO' => 'FrankRizzo'
   }.each do |input, output|
     specify "#{input} => #{output}" do
       expect(subject.transform(input, nil)).to eq(output)
