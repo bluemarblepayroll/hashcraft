@@ -16,16 +16,12 @@ module Hashcraft
   # Singleton that knows how to register and retrieve transformer instances.
   class TransformerRegistry < Registry
     def initialize
-      super(DEFAULT_MAP)
+      super(
+        'camel_case' => Transformers::CamelCase.instance,
+        'pascal_case' => Transformers::PascalCase.instance,
+        'pass_thru' => Transformers::PassThru.instance,
+        '' => Transformers::PassThru.instance
+      )
     end
-
-    DEFAULT_MAP = {
-      'camel_case' => Transformers::CamelCase.instance,
-      'pascal_case' => Transformers::PascalCase.instance,
-      'pass_thru' => Transformers::PassThru.instance,
-      '' => Transformers::PassThru.instance
-    }.freeze
-
-    private_constant :DEFAULT_MAP
   end
 end

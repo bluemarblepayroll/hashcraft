@@ -16,16 +16,12 @@ module Hashcraft
   # Singleton that knows how to register and retrieve mutator instances.
   class MutatorRegistry < Registry
     def initialize
-      super(DEFAULT_MAP)
+      super(
+        'array' => Mutators::Array.instance,
+        'hash' => Mutators::Hash.instance,
+        'property' => Mutators::Property.instance,
+        '' => Mutators::Property.instance
+      )
     end
-
-    DEFAULT_MAP = {
-      'array' => Mutators::Array.instance,
-      'hash' => Mutators::Hash.instance,
-      'property' => Mutators::Property.instance,
-      '' => Mutators::Property.instance
-    }.freeze
-
-    private_constant :DEFAULT_MAP
   end
 end
