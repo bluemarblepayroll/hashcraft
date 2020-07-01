@@ -8,7 +8,6 @@
 #
 
 require_relative 'option'
-require_relative 'option_set'
 
 module Hashcraft
   # The class API used to define options for a craftable class.  Each class stores its own
@@ -40,11 +39,11 @@ module Hashcraft
         ancestors
         .reverse
         .select { |a| a < Base }
-        .each_with_object(OptionSet.new) { |a, memo| memo.merge!(a.local_option_set) }
+        .each_with_object(Generic::Dictionary.new) { |a, memo| memo.merge!(a.local_option_set) }
     end
 
     def local_option_set
-      @local_option_set ||= OptionSet.new
+      @local_option_set ||= Generic::Dictionary.new(key: :name)
     end
   end
 end

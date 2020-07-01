@@ -14,6 +14,9 @@ require 'singleton'
 require_relative 'hashcraft/core_ext/hash'
 Hash.include Hashcraft::CoreExt::Hash
 
+# General tooling
+require_relative 'hashcraft/generic'
+
 require_relative 'hashcraft/base'
 require_relative 'hashcraft/mutator_registry'
 require_relative 'hashcraft/transformer_registry'

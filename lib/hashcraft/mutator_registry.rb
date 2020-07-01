@@ -7,14 +7,13 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-require_relative 'registry'
 require_relative 'mutators/array'
 require_relative 'mutators/hash'
 require_relative 'mutators/property'
 
 module Hashcraft
   # Singleton that knows how to register and retrieve mutator instances.
-  class MutatorRegistry < Registry
+  class MutatorRegistry < Generic::Registry
     def initialize
       super(
         'array' => Mutators::Array.instance,
