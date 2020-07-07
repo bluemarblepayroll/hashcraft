@@ -20,7 +20,9 @@ end
 class Column < Hashcraft::Base
   option :header, :property
 
-  option :context, mutator: :hash
+  option :context, mutator: :hash,
+                   eager: true,
+                   default: {}
 
   option :content, craft: Content,
                    mutator: :array,
@@ -43,5 +45,7 @@ class Grid < Hashcraft::Base
 
   option :column, craft: Column,
                   mutator: :array,
-                  key: :columns
+                  key: :columns,
+                  eager: true,
+                  default: []
 end

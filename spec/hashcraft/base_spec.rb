@@ -137,6 +137,11 @@ RSpec.describe Hashcraft::Base do
             content property: :first
             content property: :last
           end
+
+          column header: 'SomethingElse' do
+            content property: :a
+            content property: :b
+          end
         end
       end
 
@@ -144,15 +149,25 @@ RSpec.describe Hashcraft::Base do
         expected = [
           {
             'header' => 'ID #',
+            'context' => {},
             'contents' => [
               { 'property' => :id }
             ]
           },
           {
             'header' => 'Name',
+            'context' => {},
             'contents' => [
               { 'property' => :first },
               { 'property' => :last }
+            ]
+          },
+          {
+            'header' => 'SomethingElse',
+            'context' => {},
+            'contents' => [
+              { 'property' => :a },
+              { 'property' => :b }
             ]
           }
         ]

@@ -38,7 +38,7 @@ module Hashcraft
     def default!(data)
       return self unless eager
 
-      data[name] = default
+      data[name] = default.dup
 
       self
     end
