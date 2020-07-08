@@ -8,7 +8,7 @@
 #
 
 module Hashcraft
-  module Transformers
+  module Transformers # :nodoc: all
     # Transform snake-cased to pascal-cased string. Example:
     #   date_of_birth => DateOfBirth
     #   DATE_OF_BIRTH => DateOfBirth

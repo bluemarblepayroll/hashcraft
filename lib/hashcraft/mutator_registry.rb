@@ -16,16 +16,16 @@ require_relative 'mutators/property'
 
 module Hashcraft
   # Singleton that knows how to register and retrieve mutator instances.
-  class MutatorRegistry < Generic::Registry
+  class MutatorRegistry < Generic::Registry # :nodoc:
     def initialize
       super(
+        '' => Mutators::Property.instance,
         'always_false' => Mutators::AlwaysFalse.instance,
         'always_true' => Mutators::AlwaysTrue.instance,
         'array' => Mutators::Array.instance,
         'flat_array' => Mutators::FlatArray.instance,
         'hash' => Mutators::Hash.instance,
-        'property' => Mutators::Property.instance,
-        '' => Mutators::Property.instance
+        'property' => Mutators::Property.instance
       )
     end
   end

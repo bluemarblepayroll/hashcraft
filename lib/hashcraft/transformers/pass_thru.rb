@@ -8,7 +8,7 @@
 #
 
 module Hashcraft
-  module Transformers
+  module Transformers # :nodoc: all
     # Default transformer, simply returns the value passed in.
     class PassThru
       include Singleton

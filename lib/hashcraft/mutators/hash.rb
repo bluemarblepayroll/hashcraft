@@ -8,7 +8,7 @@
 #
 
 module Hashcraft
-  module Mutators
+  module Mutators # :nodoc: all
     # When a hash's key a Hash then this mutator can be used to merge a new value on the
     # respective hash.
     class Hash

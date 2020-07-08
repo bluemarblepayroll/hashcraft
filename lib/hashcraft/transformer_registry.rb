@@ -13,13 +13,13 @@ require_relative 'transformers/pass_thru'
 
 module Hashcraft
   # Singleton that knows how to register and retrieve transformer instances.
-  class TransformerRegistry < Generic::Registry
+  class TransformerRegistry < Generic::Registry # :nodoc:
     def initialize
       super(
+        '' => Transformers::PassThru.instance,
         'camel_case' => Transformers::CamelCase.instance,
         'pascal_case' => Transformers::PascalCase.instance,
-        'pass_thru' => Transformers::PassThru.instance,
-        '' => Transformers::PassThru.instance
+        'pass_thru' => Transformers::PassThru.instance
       )
     end
   end

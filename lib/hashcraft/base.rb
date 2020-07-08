@@ -16,7 +16,6 @@ module Hashcraft
     extend Forwardable
 
     def_delegators :'self.class',
-                   :option?,
                    :option_set,
                    :find_option,
                    :key_transformer_to_use,
@@ -55,20 +54,6 @@ module Hashcraft
 
     def load_opts(opts)
       (opts || {}).each { |k, v| send(k, v) }
-    end
-
-    def respond_to_missing?(method_name, include_private = false)
-      option?(method_name) || super
-    end
-
-    def method_missing(method_name, *arguments, &block)
-      if option?(method_name)
-        option = find_option(method_name)
-
-        value!(option, arguments.first, &block)
-      else
-        super
-      end
     end
 
     def evaluate_values!(data, key, values)

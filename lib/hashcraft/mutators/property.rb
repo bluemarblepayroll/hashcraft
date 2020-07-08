@@ -8,7 +8,7 @@
 #
 
 module Hashcraft
-  module Mutators
+  module Mutators # :nodoc: all
     # When a hash key can be simply assigned to (like a property) then this mutator can be used to
     # simply do the assignment.
     class Property

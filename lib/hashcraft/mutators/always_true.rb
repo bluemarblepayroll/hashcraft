@@ -8,7 +8,7 @@
 #
 
 module Hashcraft
-  module Mutators
+  module Mutators # :nodoc: all
     # Set to true, no matter what.
     class AlwaysTrue
       include Singleton

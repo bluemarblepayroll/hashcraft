@@ -8,7 +8,7 @@
 #
 
 module Hashcraft
-  module Generic
+  module Generic # :nodoc: all
     # A general data structure that can register and resolve objects by name.
     # It also will act as a pass-thru if a non-string or non-symbol is passed through.
     class Registry

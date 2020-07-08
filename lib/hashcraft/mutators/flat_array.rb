@@ -8,7 +8,7 @@
 #
 
 module Hashcraft
-  module Mutators
+  module Mutators # :nodoc: all
     # If the value is an array then concat, if it is not an array then push.
     class FlatArray
       include Singleton

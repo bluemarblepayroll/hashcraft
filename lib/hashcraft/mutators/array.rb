@@ -8,7 +8,7 @@
 #
 
 module Hashcraft
-  module Mutators
+  module Mutators # :nodoc: all
     # When a hash's key is an array then this mutator can be used to push a new value on the
     # respective array.
     class Array

@@ -18,15 +18,21 @@ module Hashcraft
     attr_reader :local_key_transformer,
                 :local_value_transformer
 
+    # DSL Method used to declare what the sub-class should use as a transformer for all keys.
+    # It will follow the typical inheritance chain and find the closest
+    # transformer to use (child-first).
     def key_transformer(name)
       tap { @local_key_transformer = TransformerRegistry.resolve(name) }
     end
 
+    # DSL Method used to declare what the sub-class should use as a transformer for all values.
+    # It will follow the typical inheritance chain and find the closest
+    # transformer to use (child-first).
     def value_transformer(name)
       tap { @local_value_transformer = TransformerRegistry.resolve(name) }
     end
 
-    def key_transformer_to_use
+    def key_transformer_to_use # :nodoc:
       return @key_transformer_to_use if @key_transformer_to_use
 
       @closest_key_transformer =
@@ -35,7 +41,7 @@ module Hashcraft
                  &.local_key_transformer || Transformers::PassThru.instance
     end
 
-    def value_transformer_to_use
+    def value_transformer_to_use # :nodoc:
       return @value_transformer_to_use if @value_transformer_to_use
 
       @closest_value_transformer =
@@ -44,14 +50,12 @@ module Hashcraft
                  &.local_value_transformer || Transformers::PassThru.instance
     end
 
-    def option?(name)
-      option_set.exist?(name)
-    end
-
-    def find_option(name)
+    def find_option(name) # :nodoc:
       option_set.find(name)
     end
 
+    # The main class-level DSL method consumed by sub-classes.  This is the entry-point for the
+    # declaration of available options.
     def option(*args)
       opts = args.last.is_a?(Hash) ? args.pop : {}
 
@@ -59,12 +63,22 @@ module Hashcraft
         option = Option.new(key, opts)
 
         local_option_set.add(option)
+
+        method_name = option.name
+
+        class_eval <<~RUBY, __FILE__, __LINE__ + 1
+          def #{method_name}(opts = {}, &block)
+            option = find_option('#{method_name}')
+
+            value!(option, opts, &block)
+          end
+        RUBY
       end
 
       self
     end
 
-    def option_set
+    def option_set # :nodoc:
       @option_set ||=
         ancestors
         .reverse
@@ -72,7 +86,7 @@ module Hashcraft
         .each_with_object(Generic::Dictionary.new) { |a, memo| memo.merge!(a.local_option_set) }
     end
 
-    def local_option_set
+    def local_option_set # :nodoc:
       @local_option_set ||= Generic::Dictionary.new(key: :name)
     end
   end

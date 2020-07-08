@@ -8,7 +8,7 @@
 #
 
 module Hashcraft
-  module Generic
+  module Generic # :nodoc: all
     # Dictionary structure defining how we want to organize objects.  Basically a type-insensitive
     # hash where each key is the object's value for the specified key.
     # All keys are #to_s evaluated in order to achieve the type-insensitivity.
@@ -32,10 +32,6 @@ module Hashcraft
         return enum_for(:each) unless block_given?
 
         values.each(&block)
-      end
-
-      def exist?(key)
-        !find(key).nil?
       end
 
       def find(key)
