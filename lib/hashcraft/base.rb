@@ -19,12 +19,13 @@ module Hashcraft
                    :option?,
                    :option_set,
                    :find_option,
-                   :key_transformer_object,
-                   :value_transformer_object
+                   :key_transformer_to_use,
+                   :value_transformer_to_use
 
     def initialize(opts = {}, &block)
-      @data = make_default_data
+      @data = {}
 
+      load_default_data
       load_opts(opts)
 
       return unless block_given?
@@ -48,14 +49,8 @@ module Hashcraft
 
     attr_reader :data
 
-    def make_default_data
-      option_set.values.each_with_object({}) do |o, memo|
-        o.default!(
-          memo,
-          key_transformer_object,
-          value_transformer_object
-        )
-      end
+    def load_default_data
+      option_set.each { |option| default!(option) }
     end
 
     def load_opts(opts)
@@ -68,13 +63,9 @@ module Hashcraft
 
     def method_missing(method_name, *arguments, &block)
       if option?(method_name)
-        find_option(method_name).value!(
-          data,
-          arguments.first,
-          key_transformer_object,
-          value_transformer_object,
-          &block
-        )
+        option = find_option(method_name)
+
+        value!(option, arguments.first, &block)
       else
         super
       end
@@ -94,6 +85,31 @@ module Hashcraft
       data[key] = (value.is_a?(Hashcraft::Base) ? value.to_h : value)
 
       self
+    end
+
+    def default!(option)
+      return self unless option.eager?
+
+      key   = hash_key(option)
+      value = value_transformer_to_use.transform(option.default.dup, option)
+
+      data[key] = value
+
+      self
+    end
+
+    def value!(option, value, &block)
+      key   = hash_key(option)
+      value = option.craft_value(value, &block)
+      value = value_transformer_to_use.transform(value, option)
+
+      option.value!(data, key, value)
+
+      self
+    end
+
+    def hash_key(option)
+      key_transformer_to_use.transform(option.hash_key, option)
     end
   end
 end

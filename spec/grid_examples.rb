@@ -15,11 +15,13 @@ class ExclamationTransformer
   end
 end
 
-class Header < Hashcraft::Base
+class HeaderBase < Hashcraft::Base
   key_transformer :camel_case
 
   value_transformer ExclamationTransformer.instance
+end
 
+class Header < HeaderBase
   option :title, eager: true,
                  default: 'Untitled Grid',
                  meta: { exclaim: true }

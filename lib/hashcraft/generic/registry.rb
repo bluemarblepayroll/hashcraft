@@ -46,11 +46,7 @@ module Hashcraft
       def resolve(value)
         return value unless lookup?(value)
 
-        mutator = map[value.to_s]
-
-        raise ArgumentError, "registration: #{value} not found" unless mutator
-
-        mutator
+        map[value.to_s] || raise(ArgumentError, "registration: #{value} not found")
       end
 
       private

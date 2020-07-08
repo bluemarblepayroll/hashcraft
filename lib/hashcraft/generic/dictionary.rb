@@ -28,6 +28,12 @@ module Hashcraft
         freeze
       end
 
+      def each(&block)
+        return enum_for(:each) unless block_given?
+
+        values.each(&block)
+      end
+
       def exist?(key)
         !find(key).nil?
       end

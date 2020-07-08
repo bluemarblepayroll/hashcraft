@@ -15,12 +15,33 @@ module Hashcraft
   # OptionSet instance along with materializing one for its
   # inheritance chain (child has precedence.)
   module Dsl
+    attr_reader :local_key_transformer,
+                :local_value_transformer
+
     def key_transformer(name)
-      tap { @key_transformer_object = TransformerRegistry.resolve(name) }
+      tap { @local_key_transformer = TransformerRegistry.resolve(name) }
     end
 
     def value_transformer(name)
-      tap { @value_transformer_object = TransformerRegistry.resolve(name) }
+      tap { @local_value_transformer = TransformerRegistry.resolve(name) }
+    end
+
+    def key_transformer_to_use
+      return @key_transformer_to_use if @key_transformer_to_use
+
+      @closest_key_transformer =
+        ancestors.select { |a| a < Base }
+                 .find(&:local_key_transformer)
+                 &.local_key_transformer || Transformers::PassThru.instance
+    end
+
+    def value_transformer_to_use
+      return @value_transformer_to_use if @value_transformer_to_use
+
+      @closest_value_transformer =
+        ancestors.select { |a| a < Base }
+                 .find(&:local_value_transformer)
+                 &.local_value_transformer || Transformers::PassThru.instance
     end
 
     def option?(name)
@@ -53,14 +74,6 @@ module Hashcraft
 
     def local_option_set
       @local_option_set ||= Generic::Dictionary.new(key: :name)
-    end
-
-    def key_transformer_object
-      @key_transformer_object || Transformers::PassThru.instance
-    end
-
-    def value_transformer_object
-      @value_transformer_object || Transformers::PassThru.instance
     end
   end
 end
