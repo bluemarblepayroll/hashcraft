@@ -36,6 +36,8 @@ module Hashcraft
       end
     end
 
+    # Main compilation method.  Once an object is hydrated, you can call this method to get the
+    # materialized hash.
     def to_h
       data.each_with_object({}) do |(key, value), memo|
         method = value.is_a?(Array) ? :evaluate_values! : :evaluate_value!
