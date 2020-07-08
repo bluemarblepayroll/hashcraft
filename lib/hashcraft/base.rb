@@ -7,7 +7,6 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-require_relative 'compiler'
 require_relative 'dsl'
 
 module Hashcraft
@@ -19,7 +18,9 @@ module Hashcraft
     def_delegators :'self.class',
                    :option?,
                    :option_set,
-                   :find_option
+                   :find_option,
+                   :key_transformer_object,
+                   :value_transformer_object
 
     def initialize(opts = {}, &block)
       @data = make_default_data
@@ -35,12 +36,12 @@ module Hashcraft
       end
     end
 
-    def to_h(key_transformer: nil, value_transformer: nil)
-      Compiler.new(
-        option_set,
-        key_transformer: key_transformer,
-        value_transformer: value_transformer
-      ).evaluate!(data)
+    def to_h
+      data.each_with_object({}) do |(key, value), memo|
+        method = value.is_a?(Array) ? :evaluate_values! : :evaluate_value!
+
+        send(method, memo, key, value)
+      end
     end
 
     private
@@ -48,7 +49,13 @@ module Hashcraft
     attr_reader :data
 
     def make_default_data
-      option_set.values.each_with_object({}) { |o, memo| o.default!(memo) }
+      option_set.values.each_with_object({}) do |o, memo|
+        o.default!(
+          memo,
+          key_transformer_object,
+          value_transformer_object
+        )
+      end
     end
 
     def load_opts(opts)
@@ -61,10 +68,32 @@ module Hashcraft
 
     def method_missing(method_name, *arguments, &block)
       if option?(method_name)
-        find_option(method_name).value!(data, arguments.first, &block)
+        find_option(method_name).value!(
+          data,
+          arguments.first,
+          key_transformer_object,
+          value_transformer_object,
+          &block
+        )
       else
         super
       end
+    end
+
+    def evaluate_values!(data, key, values)
+      data[key] ||= []
+
+      values.each do |value|
+        data[key] << (value.is_a?(Hashcraft::Base) ? value.to_h : value)
+      end
+
+      self
+    end
+
+    def evaluate_value!(data, key, value)
+      data[key] = (value.is_a?(Hashcraft::Base) ? value.to_h : value)
+
+      self
     end
   end
 end

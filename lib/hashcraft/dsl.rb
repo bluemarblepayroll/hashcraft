@@ -8,12 +8,21 @@
 #
 
 require_relative 'option'
+require_relative 'transformer_registry'
 
 module Hashcraft
   # The class API used to define options for a craftable class.  Each class stores its own
   # OptionSet instance along with materializing one for its
   # inheritance chain (child has precedence.)
   module Dsl
+    def key_transformer(name)
+      tap { @key_transformer_object = TransformerRegistry.resolve(name) }
+    end
+
+    def value_transformer(name)
+      tap { @value_transformer_object = TransformerRegistry.resolve(name) }
+    end
+
     def option?(name)
       option_set.exist?(name)
     end
@@ -44,6 +53,14 @@ module Hashcraft
 
     def local_option_set
       @local_option_set ||= Generic::Dictionary.new(key: :name)
+    end
+
+    def key_transformer_object
+      @key_transformer_object || Transformers::PassThru.instance
+    end
+
+    def value_transformer_object
+      @value_transformer_object || Transformers::PassThru.instance
     end
   end
 end

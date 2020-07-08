@@ -7,10 +7,28 @@
 # LICENSE file in the root directory of this source tree.
 #
 
+class ExclamationTransformer
+  include Singleton
+
+  def transform(value, option)
+    option.meta(:exclaim) ? "#{value}!!!" : value
+  end
+end
+
 class Header < Hashcraft::Base
-  option :title, eager: true, default: 'Untitled Grid'
+  key_transformer :camel_case
+
+  value_transformer ExclamationTransformer.instance
+
+  option :title, eager: true,
+                 default: 'Untitled Grid',
+                 meta: { exclaim: true }
 
   option :message
+
+  option :i_should_be_camel_cased, default: '',
+                                   eager: true,
+                                   meta: { exclaim: true }
 end
 
 class Content < Hashcraft::Base

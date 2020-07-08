@@ -55,15 +55,34 @@ RSpec.describe Hashcraft::Base do
         end
       end
 
-      it 'leverages declared Hashcraft::Base subclass' do
+      it 'leverages declared Hashcraft::Base subclass & uses key/value transformers for defaults' do
         expected = {
           'message' => 'Use this grid to search patients...',
-          'title' => 'Untitled Grid'
+          'title' => 'Untitled Grid!!!',
+          'iShouldBeCamelCased' => '!!!'
         }
 
         actual = subject.to_h['header']
 
         expect(actual).to eq(expected)
+      end
+    end
+
+    describe 'transformer' do
+      it 'is called after a value is resolved' do
+        hash = Grid.new do
+          header do
+            title 'patients'
+          end
+        end.to_h
+
+        expect(hash.dig('header', 'title')).to eq('patients!!!')
+      end
+
+      it 'is overridden when explicitly defined' do
+        hash = Grid.new(max_width: '500px').to_h
+
+        expect(hash['max_width']).to eq('500px')
       end
     end
 

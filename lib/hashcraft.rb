@@ -18,5 +18,3 @@ Hash.include Hashcraft::CoreExt::Hash
 require_relative 'hashcraft/generic'
 
 require_relative 'hashcraft/base'
-require_relative 'hashcraft/mutator_registry'
-require_relative 'hashcraft/transformer_registry'
