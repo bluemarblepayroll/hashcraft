@@ -147,7 +147,7 @@ This means there is an available method called api_url that can be called to set
 * **eager**: always assign a value.  When true it will always assign the key a value.
 * **key**: allows for aliasing keys.  If omitted, the key will be the option's method name (api_url as noted above).
 * **meta**: used to store any arbitrary data that can be accessed with transformers.
-* **mutator**: defines the type of the data backing the method, defaulting to property.  When the default property is used then it will simply assign the passed in value.  Other values are: `hash` and `array`.  When hash is used then the passed in value will be merged onto the key's value.  When array is used then the passed in value will be pushed onto the key's value.
+* **mutator**: defines the *type of update* to be made to the underlying value, defaulting to `property`.  When the default, `property`, is used then it will simply assign the passed in value.  Some other options are: `hash` and `array`.  When hash is used then the passed in value will be merged onto the key's value.  When array is used then the passed in value will be pushed onto the key's value.  For other types see the `Hashcraft::MutatorRegistry` file.
 
 ### Internationalization Support
 
@@ -155,7 +155,7 @@ There is currently no first-class support for internationalization, but you can 
 
 ### Transformers
 
-Transformers are optional but come into play when you need any additional/special processing of keys and values.  By default, keys and values use the pass-thru transformer (Hashable::Transformers::PassThru) but can be explicitly passed any object that responds to `#transform(value, option)`.
+Transformers are optional but come into play when you need any additional/special processing of keys and values.  By default, keys and values use the pass-thru transformer, `Hashcraft::Transformers::PassThru`, but can be explicitly passed any object that responds to `#transform(value, option)`.
 
 #### Key Transformer Example
 
@@ -171,12 +171,35 @@ Say, for example, we wanted to transform all keys to camel case.  We could creat
   end
 ````
 
-We can then use this when deriving hashes (using the above Grid example):
+We can then use this when deriving hashes (building on the Grid example above):
 
 ````ruby
+class Content < Hashcraft::Base
+  option :property
+end
+
+class Column < Hashcraft::Base
+  option :header
+
+  option :content, craft: Content,
+                   mutator: :array,
+                   key: :contents
+end
+
+class Grid < Hashcraft::Base
+  key_transformer CamelCase.new
+
+  option :api_url,
+         :name
+
+  option :column, craft: Column,
+                  mutator: :array,
+                  key: :columns
+end
+
 config = Grid.new do
   api_url '/patients'
-end.to_h(key_transformer: CamelCase.new)
+end.to_h
 ````
 
 The resulting `config` value will now be:
@@ -190,12 +213,23 @@ The resulting `config` value will now be:
 Note that this library ships with some basic transformers like the one mentioned above.  If you want to use this then you can simply do this:
 
 ````ruby
+class Grid < Hashcraft::Base
+  key_transformer :camel_case
+
+  option :api_url,
+         :name
+
+  option :column, craft: Column,
+                  mutator: :array,
+                  key: :columns
+end
+
 config = Grid.new do
   api_url '/patients'
-end.to_h(key_transformer: :camel_case)
+end.to_h
 ````
 
-See Hashcraft::TransformerRegistry for a full list of provided transformers.
+See the `Hashcraft::TransformerRegistry` file for a full list of provided transformers.
 
 #### Value Transformer Example
 
@@ -213,10 +247,12 @@ class Localizer
 end
 ````
 
-Building on our Grid example, we could enhance the Column object as such:
+Building on our Grid example, we could enhance the Column object:
 
 ````ruby
 class Column < Hashcraft::Base
+  value_transformer Localizer.new
+
   option :header, meta: { localize: true }
 
   option :content, craft: Content,
@@ -225,7 +261,7 @@ class Column < Hashcraft::Base
 end
 ````
 
-We can then use the new value transformer (Localizer) when deriving hashes (using the above Grid and updated Column example):
+We can then use the new value transformer, `Localizer`, when deriving hashes (building on the above Grid and updated Column example):
 
 ````yaml
 en:
@@ -237,7 +273,7 @@ en:
 config = Grid.new do
   column header: :id
   column header: :first
-end.to_h(value_transformer: Localizer.new)
+end.to_h
 ````
 
 Assuming our en.yml looks like the above example and our locale is set to:en then the resulting `config` value will now be:

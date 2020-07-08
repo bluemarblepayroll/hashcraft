@@ -9,15 +9,19 @@
 
 module Hashcraft
   module Mutators
-    # When a hash's key is an array then this mutator can be used to push a new value on the
-    # respective array.
-    class Array
+    # If the value is an array then concat, if it is not an array then push.
+    class FlatArray
       include Singleton
 
       def value!(data, key, value)
         data[key] ||= []
 
-        data[key] << value
+        # Prefixed Array with double colons to not get confused with our Array mutator class.
+        if value.is_a?(::Array)
+          data[key] += value
+        else
+          data[key] << value
+        end
 
         self
       end

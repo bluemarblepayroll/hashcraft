@@ -54,7 +54,7 @@ class Grid < Hashcraft::Base
          :name
 
   option :child, key: :children,
-                 mutator: :array
+                 mutator: :flat_array
 
   option :context, mutator: :hash
 
@@ -68,4 +68,12 @@ class Grid < Hashcraft::Base
                   key: :columns,
                   eager: true,
                   default: []
+
+  option :reorderable, eager: true,
+                       default: false,
+                       mutator: :always_true
+
+  option :disable,     key: :disabled,
+                       mutator: :always_false,
+                       default: true
 end

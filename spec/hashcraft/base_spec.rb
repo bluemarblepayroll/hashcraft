@@ -145,6 +145,51 @@ RSpec.describe Hashcraft::Base do
       end
     end
 
+    describe 'flat_array mutator can accept array' do
+      subject do
+        Grid.new name: 'PatientsGrid' do
+          child 'ChartsGrid'
+          child ['NotesGrid']
+        end
+      end
+
+      it 'pushes all values one main array' do
+        expected = %w[ChartsGrid NotesGrid]
+
+        actual = subject.to_h['children']
+
+        expect(actual).to eq(expected)
+      end
+    end
+
+    describe 'always_false mutator' do
+      subject do
+        Grid.new name: 'PatientsGrid' do
+          disable
+        end
+      end
+
+      it 'sets to false' do
+        actual = subject.to_h['disabled']
+
+        expect(actual).to be false
+      end
+    end
+
+    describe 'always_true mutator' do
+      subject do
+        Grid.new name: 'PatientsGrid' do
+          reorderable
+        end
+      end
+
+      it 'sets to true' do
+        actual = subject.to_h['reorderable']
+
+        expect(actual).to be true
+      end
+    end
+
     describe 'array mutator with nested craft' do
       subject do
         Grid.new name: 'MoviesGrid' do

@@ -15,9 +15,7 @@ module Hashcraft
       include Singleton
 
       def value!(data, key, value)
-        data[key] = value
-
-        self
+        tap { data[key] = value }
       end
     end
   end

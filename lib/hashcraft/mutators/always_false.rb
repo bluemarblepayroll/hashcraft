@@ -9,17 +9,12 @@
 
 module Hashcraft
   module Mutators
-    # When a hash's key is an array then this mutator can be used to push a new value on the
-    # respective array.
-    class Array
+    # Set to false, no matter what.
+    class AlwaysFalse
       include Singleton
 
-      def value!(data, key, value)
-        data[key] ||= []
-
-        data[key] << value
-
-        self
+      def value!(data, key, _value)
+        tap { data[key] = false }
       end
     end
   end

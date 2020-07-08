@@ -12,10 +12,6 @@ require_relative 'mutator_registry'
 module Hashcraft
   # Defines a method and corresponding attribute for a craftable class.
   class Option
-    extend Forwardable
-
-    def_delegators :mutator, :value!
-
     attr_reader :craft,
                 :default,
                 :eager,
@@ -37,6 +33,10 @@ module Hashcraft
       @name          = name.to_s
 
       freeze
+    end
+
+    def value!(data, key, value)
+      mutator.value!(data, key, value)
     end
 
     def meta(key)
