@@ -59,11 +59,7 @@ module Hashcraft
     end
 
     def evaluate_values!(data, key, values)
-      data[key] ||= []
-
-      values.each do |value|
-        data[key] << (value.is_a?(Hashcraft::Base) ? value.to_h : value)
-      end
+      data[key] = values.map { |value| value.is_a?(Hashcraft::Base) ? value.to_h : value }
 
       self
     end
