@@ -16,7 +16,7 @@ module Hashcraft
       include Singleton
 
       def transform(value, _option)
-        return '' if value.to_s.empty?
+        return value.to_s if value.to_s.empty?
 
         value.to_s.split('_').collect(&:capitalize).join
       end

@@ -11,22 +11,34 @@ require 'spec_helper'
 require 'grid_examples'
 
 RSpec.describe Hashcraft::Base do
-  describe '#respond_to?' do
-    it 'returns false for non-existant options/methods' do
-      subject = Grid.new
+  it 'adds methods for each option' do
+    subject = Grid.new
 
+    option_methods = %i[
+      max_width
+      child
+      header
+      disable
+      reorderable
+      api_url
+      column
+    ]
+
+    expect(subject.methods).to include(*option_methods)
+  end
+
+  describe '#respond_to?' do
+    subject { Grid.new }
+
+    it 'returns false for non-existant options/methods' do
       expect(subject.respond_to?(:non_existant)).to be false
     end
 
     it 'returns true for existant options' do
-      subject = Grid.new
-
       expect(subject.respond_to?(:name)).to be true
     end
 
     it 'returns true for existant methods' do
-      subject = Grid.new
-
       expect(subject.respond_to?(:to_h)).to be true
     end
   end

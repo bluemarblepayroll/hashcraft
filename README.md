@@ -276,7 +276,7 @@ config = Grid.new do
 end.to_h
 ````
 
-Assuming our en.yml looks like the above example and our locale is set to:en then the resulting `config` value will now be:
+Assuming our en.yml looks like the above example and our locale is set to :en then the resulting `config` value will now be:
 
 ````ruby
 {
