@@ -7,7 +7,7 @@
 # LICENSE file in the root directory of this source tree.
 #
 
-require_relative 'mutator_registry'
+require_relative 'mutators'
 
 module Hashcraft
   # Defines a method and corresponding attribute for a craftable class.
@@ -29,14 +29,14 @@ module Hashcraft
       @eager         = opts[:eager] || false
       @internal_meta = symbolize_keys(opts[:meta] || {})
       @key           = opts[:key].to_s
-      @mutator       = MutatorRegistry.resolve(opts[:mutator])
+      @mutator       = opts[:mutator]
       @name          = name.to_s
 
       freeze
     end
 
     def value!(data, key, value) # :nodoc:
-      mutator.value!(data, key, value)
+      Mutators.instance.value!(mutator, data, key, value)
     end
 
     # Options are sent into transformers as arguments.  Leverage the meta key for an option

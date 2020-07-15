@@ -8,6 +8,7 @@
 #
 
 require_relative 'dsl'
+require_relative 'transformers'
 
 module Hashcraft
   # Super-class for craftable objects.
@@ -74,7 +75,7 @@ module Hashcraft
       return self unless option.eager?
 
       key   = hash_key(option)
-      value = value_transformer_to_use.transform(option.default.dup, option)
+      value = Transformers.instance.transform(value_transformer_to_use, option.default.dup, option)
 
       data[key] = value
 
@@ -84,7 +85,7 @@ module Hashcraft
     def value!(option, value, &block)
       key   = hash_key(option)
       value = option.craft_value(value, &block)
-      value = value_transformer_to_use.transform(value, option)
+      value = Transformers.instance.transform(value_transformer_to_use, value, option)
 
       option.value!(data, key, value)
 
@@ -92,7 +93,7 @@ module Hashcraft
     end
 
     def hash_key(option)
-      key_transformer_to_use.transform(option.hash_key, option)
+      Transformers.instance.transform(key_transformer_to_use, option.hash_key, option)
     end
   end
 end

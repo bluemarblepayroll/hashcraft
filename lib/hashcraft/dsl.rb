@@ -8,7 +8,6 @@
 #
 
 require_relative 'option'
-require_relative 'transformer_registry'
 
 module Hashcraft
   # The class API used to define options for a craftable class.  Each class stores its own
@@ -22,32 +21,32 @@ module Hashcraft
     # It will follow the typical inheritance chain and find the closest
     # transformer to use (child-first).
     def key_transformer(name)
-      tap { @local_key_transformer = TransformerRegistry.resolve(name) }
+      tap { @local_key_transformer = name }
     end
 
     # DSL Method used to declare what the sub-class should use as a transformer for all values.
     # It will follow the typical inheritance chain and find the closest
     # transformer to use (child-first).
     def value_transformer(name)
-      tap { @local_value_transformer = TransformerRegistry.resolve(name) }
+      tap { @local_value_transformer = name }
     end
 
     def key_transformer_to_use # :nodoc:
       return @key_transformer_to_use if @key_transformer_to_use
 
-      @closest_key_transformer =
+      @key_transformer_to_use =
         ancestors.select { |a| a < Base }
                  .find(&:local_key_transformer)
-                 &.local_key_transformer || Transformers::PassThru.instance
+                 &.local_key_transformer
     end
 
     def value_transformer_to_use # :nodoc:
       return @value_transformer_to_use if @value_transformer_to_use
 
-      @closest_value_transformer =
+      @value_transformer_to_use =
         ancestors.select { |a| a < Base }
                  .find(&:local_value_transformer)
-                 &.local_value_transformer || Transformers::PassThru.instance
+                 &.local_value_transformer
     end
 
     def find_option(name) # :nodoc:
